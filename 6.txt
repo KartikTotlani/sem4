@@ -1,0 +1,107 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+void heapifyInsert(vector<int> &arr, int i);
+void insertNode(vector<int> &arr, int key);
+void heapifyDelete(vector<int> &arr, int i);
+void deleteNode(vector<int> &arr);
+void printArray(const vector<int> &arr);
+
+
+
+int main()
+{
+    int key;
+    vector<int> arr;
+    int ans = 0;
+    int ch;
+    
+    do
+    {
+        cout << "Enter your Choice:\n";
+        cout << "[1]Insert" << endl;
+        cout << "[2]Delete" << endl;
+        cout << "[3]Display" << endl;
+        cin >> ch;
+
+        switch (ch)
+        {
+        case 1:
+            cout << "Enter key:\n";
+            cin >> key;
+            insertNode(arr, key);
+            break;
+        case 2:
+            deleteNode(arr);
+            break;
+        case 3:
+            printArray(arr);
+            break;
+        default:
+            cout << "Invalid Case\n";
+        }
+
+        cout << "Do you want to continue(1-yes/0-no): ";
+        cin >> ans;
+    } while (ans == 1);
+
+    return 0;
+}
+
+void insertNode(vector<int> &arr, int key)
+{
+    arr.push_back(key);
+    heapifyInsert(arr, arr.size() - 1);
+}
+
+void heapifyInsert(vector<int> &arr, int i)
+{
+    int parent = (i - 1) / 2;
+    if (parent >= 0 && arr[i] > arr[parent])
+    {
+        swap(arr[i], arr[parent]);
+        heapifyInsert(arr, parent);
+    }
+}
+
+void deleteNode(vector<int> &arr)
+{
+    if (arr.empty())
+    {
+        cout << "Heap is empty.\n";
+        return;
+    }
+    
+    arr[0] = arr.back();
+    arr.pop_back();
+    heapifyDelete(arr, 0);
+}
+
+void heapifyDelete(vector<int> &arr, int i)
+{
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if (l < arr.size() && arr[l] > arr[largest])
+        largest = l;
+
+    if (r < arr.size() && arr[r] > arr[largest])
+        largest = r;
+
+    if (largest != i)
+    {
+        swap(arr[i], arr[largest]);
+        heapifyDelete(arr, largest);
+    }
+}
+
+
+void printArray(const vector<int> &arr)
+{
+    for (int i = 0; i < arr.size(); i++)
+    {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}

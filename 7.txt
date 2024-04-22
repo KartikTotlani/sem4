@@ -1,0 +1,127 @@
+#include <stdio.h>
+
+#define max 10
+#define INFINITY 1000
+
+int w[max][max];
+int n_size;
+int p[max];
+
+void input_data()
+{
+    printf("\n\t Multi-Stage Graph \n");
+    printf("\n Enter the number of nodes : ");
+    scanf("%d", &n_size);
+    if (n_size > max)
+    {
+        printf("\n Error: Maximum number of nodes is %d", max);
+        return;
+    }
+    int i;
+    for (i = 0; i < n_size; i++)
+    {
+        w[i][i] = 0;
+        p[i] = -1; 
+        for (int j = i + 1; j < n_size; j++)
+        {
+            int weight;
+            printf("Enter the weight of edge '%c' to '%c': ", 65 + i, 65 + j);
+            scanf("%d", &weight);
+            if (weight < 0)
+            {
+                printf("\n Error: Weight cannot be negative, treating as infinity.\n");
+                 w[i][j] = INFINITY;
+            }
+            else if (weight > INFINITY)
+            {
+                printf("\n Warning: Weight too large, treating as infinity.\n");
+                w[i][j] = INFINITY;
+            }
+            else
+            {
+                w[i][j] = weight;
+            }
+            w[j][i] = w[i][j];
+        }
+    }
+}
+
+
+
+
+
+void display_data()
+{
+    printf("\n The Path adjacent matrix \n");
+    printf("\n ");
+    for (int i = 0; i < n_size; i++)
+    {
+        printf("\n");
+        for (int j = 0; j < n_size; j++)
+            printf("\t %d", w[i][j]);
+    }
+}
+
+int find_shortest(int source, int destination, int p[])
+{
+    if (source == destination)
+        return 0;
+    else
+    {
+        int ret = -1;
+        int min = INFINITY;
+        int temp_destination;
+        for (int i = 0; i < n_size; i++)
+        {
+            if (w[source][i] != 0)
+            {
+                ret = 0;
+                temp_destination = w[source][i] + find_shortest(i, destination, p);
+                if (min > temp_destination)
+                {
+                    min = temp_destination;
+                    p[source] = i;
+                }
+            }
+        }
+        if (ret == -1)
+            return INFINITY;
+        else
+            return min;
+    }
+}
+
+void multi_stage_graph()
+{
+    char source, destination;
+    int source_index, destination_index;
+    int p[max]; 
+    printf("\nEnter the source and destination node : ");
+    scanf(" %c %c", &source, &destination);
+    fflush(stdin);
+    source_index = (int)source - 65;
+    destination_index = (int)destination - 65;
+    int distance = find_shortest(source_index, destination_index, p);
+    if (distance >= INFINITY)
+        printf("\n The shortest distance between '%c' and '%c' can't be computed", source, destination);
+    else
+    {
+        printf("\n The shortest distance between '%c' and '%c' : %d", source, destination, distance);
+        printf("\n The shortest path : %c", source);
+        int temp_index = source_index;
+        while (temp_index != destination_index)
+        {
+            temp_index = p[temp_index];
+            printf(" -> %c", 65 + temp_index);
+        }
+    }
+}
+
+int main()
+{
+    input_data();
+    display_data();
+    multi_stage_graph();
+    return 0;
+}
+
